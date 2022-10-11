@@ -26,7 +26,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Load the Python Standard and DesignScript Libraries\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nsys.path.append(r'C:\\Users\\gwalker\\Anaconda3\\envs\\Dynamo383\\Lib\\site-packages')\r\nimport numpy as np\r\n\r\n# The inputs to this node will be stored as a list in the IN variables.\r\npointList = IN[0]\r\nmaxDistance = IN[1]\r\nallPoints = IN[2]\r\n\r\n###################################################\r\n#This script finds the closest point that is under the max limit input\r\n###################################################\r\n\r\n#Create blank lists for the outputs\r\ngroupedPoints = []\r\noutOfRangePoints = []\r\n\r\n#Loop between the 2 lists\r\nfor point in pointList:\r\n    pointDistance = []\r\n    npPoint = np.array((point.X, point.Y, point.Z))\r\n    \r\n    for secondaryPoint in allPoints:\r\n        #Using numpy calculate the euclidean distance \r\n        npSecondPoint = np.array((secondaryPoint.X, secondaryPoint.Y, secondaryPoint.Z))\r\n        \r\n        #Check are points equal\r\n        if np.array_equal(npPoint, secondaryPoint) == False:\r\n            pointDistance.append(np.linalg.norm(npPoint-npSecondPoint))\r\n            \r\n    try:\r\n        #remove any duplicate points in both lists to ensure the index matches \r\n        del allPoints[pointDistance.index(0.0)]\r\n        pointDistance.remove(0.0)\r\n    except:\r\n        print(\"can't remove 0\")\r\n        \r\n    try:\r\n        #check if the min distance isn't greater than the max\r\n        minDistance = min(pointDistance)\r\n        if minDistance < maxDistance:\r\n            indexOfClosestPoint = pointDistance.index(minDistance)\r\n            groupedPoints.append([point, allPoints[indexOfClosestPoint]])\r\n        else:\r\n            outOfRangePoints.append(point)\r\n    except:\r\n        print(\"An exception occurred finding closest point\")\r\n    \r\n\r\n# Assign your output to the OUT variable.\r\nOUT = groupedPoints#[groupedPoints, outOfRangePoints]",
+      "Code": "# Load the Python Standard and DesignScript Libraries\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nsys.path.append(r'%AppData%\\Roaming\\Dynamo\\Dynamo Revit\\2.12\\packages\\RSBGDynamo\\extra')\r\nimport numpy as np\r\n\r\n# The inputs to this node will be stored as a list in the IN variables.\r\npointList = IN[0]\r\nmaxDistance = IN[1]\r\nallPoints = IN[2]\r\n\r\n###################################################\r\n#This script finds the closest point that is under the max limit input\r\n###################################################\r\n\r\n#Create blank lists for the outputs\r\ngroupedPoints = []\r\noutOfRangePoints = []\r\n\r\n#Loop between the 2 lists\r\nfor point in pointList:\r\n    pointDistance = []\r\n    npPoint = np.array((point.X, point.Y, point.Z))\r\n    \r\n    for secondaryPoint in allPoints:\r\n        #Using numpy calculate the euclidean distance \r\n        npSecondPoint = np.array((secondaryPoint.X, secondaryPoint.Y, secondaryPoint.Z))\r\n        \r\n        #Check are points equal\r\n        if np.array_equal(npPoint, secondaryPoint) == False:\r\n            pointDistance.append(np.linalg.norm(npPoint-npSecondPoint))\r\n            \r\n    try:\r\n        #remove any duplicate points in both lists to ensure the index matches \r\n        del allPoints[pointDistance.index(0.0)]\r\n        pointDistance.remove(0.0)\r\n    except:\r\n        print(\"can't remove 0\")\r\n        continue\r\n        \r\n    try:\r\n        #check if the min distance isn't greater than the max\r\n        minDistance = min(pointDistance)\r\n        if minDistance < maxDistance:\r\n            indexOfClosestPoint = pointDistance.index(minDistance)\r\n            groupedPoints.append([point, allPoints[indexOfClosestPoint]])\r\n        else:\r\n            outOfRangePoints.append(point)\r\n    except:\r\n        print(\"An exception occurred finding closest point\")\r\n        continue\r\n    \r\n\r\n# Assign your output to the OUT variable.\r\nOUT = [groupedPoints, outOfRangePoints]",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "1d3308e0c5bf4047ae8b6e345f9ee10c",
@@ -308,8 +308,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -2.5603768922438803,
-        "Y": 124.35344971159304
+        "X": 232.03435832860589,
+        "Y": 120.70689942318609
       },
       {
         "ShowGeometry": true,
@@ -318,8 +318,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 33.0,
-        "Y": -103.0
+        "X": 234.77578262518693,
+        "Y": -55.594846250709111
       },
       {
         "ShowGeometry": true,
@@ -328,8 +328,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 26.0,
-        "Y": 23.0
+        "X": 260.59473522084977,
+        "Y": 35.155167628023321
       },
       {
         "ShowGeometry": true,
