@@ -1,0 +1,151 @@
+{
+  "Uuid": "98e8921c-9afd-4ed0-ad30-8046d8953850",
+  "IsCustomNode": true,
+  "Category": "RSGBDynamo",
+  "Description": "Please run this to install all dependency's needed for RSBG Dynamo ",
+  "Name": "InstallDependency",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [
+    {
+      "Id": "509c01bc9fd54d98a3435862318878d7",
+      "Name": "Python Script",
+      "Type": "unknown",
+      "InitialValue": "",
+      "Description": "Runs an embedded Python script."
+    }
+  ],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "[\"numpy\", \"scipy\"];",
+      "Id": "66f6a054275c465a8cfd197affedd98a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8ca1968cdc614ec2a5a53446deeb6389",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# More info here\r\n# https://github-wiki-see.page/m/DynamoDS/Dynamo/wiki/Customizing-Dynamo%27s-Python-3-installation\r\nimport sys\r\nimport clr\r\nimport System\r\nimport re\r\npyEngineName = sys.implementation.name \r\nif pyEngineName != \"ironpython\":\r\n    reDir = System.IO.DirectoryInfo(re.__file__)\r\n    path_py3_lib = reDir.Parent.Parent.FullName\r\n\r\n    clr.AddReference(\"System.Windows.Forms\")\r\n    import System.Windows.Forms\r\n    from System.Windows.Forms import MessageBox, MessageBoxButtons, MessageBoxIcon\r\n\r\n    init_setup = False\r\n\r\n\r\n    import platform, os, subprocess, importlib.util\r\n    from System import Environment\r\n    from System.Net import WebClient\r\n    #\r\n    # get paths\r\n    assert os.path.isdir(path_py3_lib)\r\n    pipDirPath = os.path.join(path_py3_lib, 'Scripts')\r\n    pipfilePath = pipDirPath + \"\\\\pip\"\r\n    get_pip_path = os.path.join(path_py3_lib, 'get-pip.py')\r\n    site_packagepath = os.path.join(path_py3_lib, 'Lib\\site-packages')\r\n    #\r\n    if not os.path.isfile(get_pip_path):\r\n        client = WebClient()\r\n        client.DownloadFile('https://bootstrap.pypa.io/get-pip.py', get_pip_path)\r\n    pthFilePath = os.path.join(path_py3_lib, 'python38._pth')\r\n    assert os.path.isfile(pthFilePath)\r\n    \r\n    with open(pthFilePath, 'r+') as f:\r\n        lines = f.readlines()\r\n        if re.match(r'#import site', lines[-1]) is not None:\r\n            lines[-1] = re.sub(r'#', '', lines[-1])\r\n            f.writelines(lines)\r\n    \r\n    if not os.path.isdir(pipDirPath):\r\n        print(f'installing pip in local Python environment: {path_py3_lib}')\r\n        subprocess.Popen([\"python\", get_pip_path])\r\n        # try to update pip\r\n        try:\r\n            #subprocess.run(['python', '-m', pipfilePath, 'install', '--upgrade pip'],  cwd = path_py3_lib)\r\n            subprocess.Popen([\"python\", '-m', pipfilePath, 'install', '--upgrade pip'],  cwd = path_py3_lib)\r\n        except Exception as ex:\r\n            print(str(ex))\r\n        init_setup = True\r\n        MessageBox.Show(\"Initialization in Progress...\\nWhen installation finished, close Dynamo and relaunch this script to install packages\", \"Initialization In Progress...\", MessageBoxButtons.OK, MessageBoxIcon.Warning)\r\n    else: \r\n        print('pip was already installed for this local Python environment')\r\n        init_setup = False\r\n    #\r\n    installPackages = IN[0]\r\n    if installPackages and not init_setup:\r\n        sys.path.append(site_packagepath)\r\n        for packageName in installPackages:\r\n            spec = importlib.util.find_spec( packageName )\r\n            if spec is None: \r\n                try:\r\n                    subprocess.run([pipfilePath, 'install', '--target='+ site_packagepath, packageName], cwd = path_py3_lib)\r\n                    print(f'{packageName} succesfully installed')\r\n                except Exception as ex:\r\n                    print(f'error while installing {packageName}')\r\n                    print(str(ex))\r\n            else:\r\n                print(f\"package {packageName} is already installed\")",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "509c01bc9fd54d98a3435862318878d7",
+      "Inputs": [
+        {
+          "Id": "0c995de68653426bafa31659bc8ca8ef",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7cfdad28f2a44342ac5690c7cfac064e",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "8ca1968cdc614ec2a5a53446deeb6389",
+      "End": "0c995de68653426bafa31659bc8ca8ef",
+      "Id": "c4987e46648f4a09be4a61dac377cd0a"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.0.5650",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "66f6a054275c465a8cfd197affedd98a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 498.0,
+        "Y": 320.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "509c01bc9fd54d98a3435862318878d7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": true,
+        "Excluded": false,
+        "X": 736.0,
+        "Y": 319.0
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "ab9b7cf476554015abe202a13902e605",
+        "Title": "<Click here to edit the group title>",
+        "Nodes": [
+          "509c01bc9fd54d98a3435862318878d7",
+          "66f6a054275c465a8cfd197affedd98a"
+        ],
+        "Left": 488.0,
+        "Top": 223.0,
+        "Width": 382.0,
+        "Height": 200.0,
+        "FontSize": 36.0,
+        "InitialTop": 319.0,
+        "InitialHeight": 134.0,
+        "TextblockHeight": 86.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
+  }
+}

@@ -1,16 +1,12 @@
 {
-  "Uuid": "4d1ee63c-9f5d-42c5-b868-f5277ca258fb",
+  "Uuid": "abebcff4-0c1c-4b48-9ba8-4694608562e9",
   "IsCustomNode": true,
-  "Category": "RSGBDynamo",
-  "Description": "A node to get the nearest level to a point based on its z value",
+  "Category": "RSGBDynamo.Level",
+  "Description": "Get the closest Level ",
   "Name": "GetNearestLevel",
   "ElementResolver": {
     "ResolutionMap": {
-      "Levels": {
-        "Key": "Rhythm.Revit.Elements.Levels",
-        "Value": "RhythmRevit.dll"
-      },
-      "Level": {
+      "Revit.Elements.Level": {
         "Key": "Revit.Elements.Level",
         "Value": "RevitNodes.dll"
       }
@@ -19,47 +15,6 @@
   "Inputs": [],
   "Outputs": [],
   "Nodes": [
-    {
-      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "# Load the Python Standard and DesignScript Libraries\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n#sys.path.append(r'C:\\Users\\gwalker\\Anaconda3\\envs\\Dynamo383\\Lib\\site-packages')\r\n\r\nsys.path.append(r'%AppData%\\Roaming\\Dynamo\\Dynamo Revit\\2.12\\packages\\RSBGDynamo\\extra')\r\nimport numpy as np\r\n# The inputs to this node will be stored as a list in the IN variables.\r\nlevelElevation = IN[0]\r\nloadElevation = IN[1]\r\n\r\n####################################################\r\n#Code to get the index of the closest level\r\n####################################################\r\n\r\noutputList = []\r\n\r\ndef find_nearest(array, value):     \r\n    array = np.asarray(array);     \r\n    idx = (np.abs(array - value)).argmin();     \r\n    return int(idx);\r\n\r\nfor load in loadElevation:\r\n    distanceFrom = []\r\n    for level in levelElevation:\r\n        distanceFrom.append(load-level)\r\n    \r\n    outputList.append(find_nearest(distanceFrom, 0))\r\n\r\n\r\nOUT = outputList",
-      "Engine": "CPython3",
-      "VariableInputPorts": true,
-      "Id": "c05f7d6928c942e5894ff81e21e650bd",
-      "Inputs": [
-        {
-          "Id": "9b6c8ed527ff41f8b3d51fba036dd376",
-          "Name": "IN[0]",
-          "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "a0fd2524720c4ee4b9e48f1be35bb69c",
-          "Name": "IN[1]",
-          "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "1de39b4ebcdc4e81a66800a71ee07298",
-          "Name": "OUT",
-          "Description": "Result of the python script",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Runs an embedded Python script."
-    },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
@@ -70,11 +25,11 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "d2a48abb72b14fa0961a0e957067dd4b",
+      "Id": "5e1a7ba8992e4d4083293bc030789e0c",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "31586b216c0d4724917e64557fb7f988",
+          "Id": "84e8715146ac4bc1bf8336b5bba78da6",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -85,62 +40,15 @@
       ],
       "Replication": "Disabled",
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "pointZ",
-        "TypeName": "double",
-        "TypeRank": -1,
-        "DefaultValue": null,
-        "Description": ""
-      },
-      "Id": "0c7cd5c44b5a4982b1d775b34269bae5",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "cdfe8f3294774b96b89480d5383f1e1e",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "OUT",
-      "Id": "a754ce7e6f9a495b97a8bd416b309417",
-      "Inputs": [
-        {
-          "Id": "098e6755a2a048f3bae832f5274ff638",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
       "NodeType": "FunctionNode",
       "FunctionSignature": "Revit.Elements.Level.Elevation",
-      "Id": "c20af91819044a0d8ec3c8874261005c",
+      "Id": "c020f0c45e4048e0867c973556e01a1d",
       "Inputs": [
         {
-          "Id": "c6d5a293777546f7a0e62a41d16a30e8",
+          "Id": "8350aa86d43849ffa3c087525c86055c",
           "Name": "level",
           "Description": "Revit.Elements.Level",
           "UsingDefaultValue": false,
@@ -151,7 +59,7 @@
       ],
       "Outputs": [
         {
-          "Id": "e7606d0dd33a4d61a52a28f7f4e358a0",
+          "Id": "0abc933195f3409b8c25e7991e3bd456",
           "Name": "double",
           "Description": "double",
           "UsingDefaultValue": false,
@@ -164,13 +72,80 @@
       "Description": "The elevation of the level above ground level\n\nLevel.Elevation: double"
     },
     {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "pointZ",
+        "TypeName": "double",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "d9df862f87d741b7963b60155ed7f128",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "010f1806a5cd40f8a68722a7f158747a",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Load the Python Standard and DesignScript Libraries\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n#sys.path.append(r'C:\\Users\\gwalker\\Anaconda3\\envs\\Dynamo383\\Lib\\site-packages')\r\n\r\nsys.path.append(r'%AppData%\\Roaming\\Dynamo\\Dynamo Revit\\2.12\\packages\\RSBGDynamo\\extra')\r\nimport numpy as np\r\n# The inputs to this node will be stored as a list in the IN variables.\r\nlevelElevation = IN[0]\r\nloadElevation = IN[1]\r\n\r\n####################################################\r\n#Code to get the index of the closest level\r\n####################################################\r\n\r\noutputList = []\r\n\r\ndef find_nearest(array, value):     \r\n    array = np.asarray(array);     \r\n    idx = (np.abs(array - value)).argmin();     \r\n    return int(idx);\r\n\r\nfor load in loadElevation:\r\n    distanceFrom = []\r\n    for level in levelElevation:\r\n        distanceFrom.append(load-level)\r\n    \r\n    outputList.append(find_nearest(distanceFrom, 0))\r\n\r\n\r\nOUT = outputList",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "a0f367a351364d65b5a91bfe8c7fcaaa",
+      "Inputs": [
+        {
+          "Id": "516cf03cc52840d38ca3ff727b769e8d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2b9da6f956374bd88d355cd061ea8f65",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f819fcbd33a24ef0ad1b25623c658997",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
       "NodeType": "FunctionNode",
       "FunctionSignature": "DSCore.List.GetItemAtIndex@var[]..[],int",
-      "Id": "41f1dd571af245bcb8a981ce2a853852",
+      "Id": "2d028383ad2a4ab99fcd3cc55e3df8f5",
       "Inputs": [
         {
-          "Id": "83ff4755af0f49a69aa143fba5dfcd96",
+          "Id": "12eae4ca67194473b34ec1d4fb6dbfa4",
           "Name": "list",
           "Description": "List to fetch an item from.\n\nvar[]..[]",
           "UsingDefaultValue": false,
@@ -179,7 +154,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "77cd1d9a021a41a0907a2d9633a02dc3",
+          "Id": "b814c4eed22a4c97bbe69b686cf26d4d",
           "Name": "index",
           "Description": "Index of the item to be fetched.\n\nint",
           "UsingDefaultValue": false,
@@ -190,7 +165,7 @@
       ],
       "Outputs": [
         {
-          "Id": "ac34487b44014b39b0fa1b3798e9a362",
+          "Id": "3edbdb91ae5645018899f78d5c2b568e",
           "Name": "item",
           "Description": "Item in the list at the given index.",
           "UsingDefaultValue": false,
@@ -201,38 +176,59 @@
       ],
       "Replication": "Auto",
       "Description": "Returns an item from the given list that's located at the specified index.\n\nList.GetItemAtIndex (list: var[]..[], index: int): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "OUT",
+      "Id": "f8ea777d29e4449f8e530ffbedb08711",
+      "Inputs": [
+        {
+          "Id": "4054c4f401914f6f969668ff7321aeb4",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
-      "Start": "1de39b4ebcdc4e81a66800a71ee07298",
-      "End": "77cd1d9a021a41a0907a2d9633a02dc3",
-      "Id": "05e4d2653ad54dc98e50af8ea1075a4d"
+      "Start": "84e8715146ac4bc1bf8336b5bba78da6",
+      "End": "8350aa86d43849ffa3c087525c86055c",
+      "Id": "144fc63df81d44e4a915bf786d759014"
     },
     {
-      "Start": "31586b216c0d4724917e64557fb7f988",
-      "End": "c6d5a293777546f7a0e62a41d16a30e8",
-      "Id": "695c1bf71ef5493ba21c4d2a51cff036"
+      "Start": "84e8715146ac4bc1bf8336b5bba78da6",
+      "End": "12eae4ca67194473b34ec1d4fb6dbfa4",
+      "Id": "f520e90f7e134726925b1ad194f3934c"
     },
     {
-      "Start": "31586b216c0d4724917e64557fb7f988",
-      "End": "83ff4755af0f49a69aa143fba5dfcd96",
-      "Id": "23c45d94b7674a7794d382a028f4c3b0"
+      "Start": "0abc933195f3409b8c25e7991e3bd456",
+      "End": "516cf03cc52840d38ca3ff727b769e8d",
+      "Id": "c6d1c6365bec4c868b99e3c9a8842e15"
     },
     {
-      "Start": "cdfe8f3294774b96b89480d5383f1e1e",
-      "End": "a0fd2524720c4ee4b9e48f1be35bb69c",
-      "Id": "8d668129f7ec400398261f4bf72cf4d6"
+      "Start": "010f1806a5cd40f8a68722a7f158747a",
+      "End": "2b9da6f956374bd88d355cd061ea8f65",
+      "Id": "4fa7f1e889234a04aad6d700f6b65a50"
     },
     {
-      "Start": "e7606d0dd33a4d61a52a28f7f4e358a0",
-      "End": "9b6c8ed527ff41f8b3d51fba036dd376",
-      "Id": "efcdc9e984ae4d9da4493bdfcbfe895c"
+      "Start": "f819fcbd33a24ef0ad1b25623c658997",
+      "End": "b814c4eed22a4c97bbe69b686cf26d4d",
+      "Id": "4105f2fc1c6c40fc844d45a7e022b65c"
     },
     {
-      "Start": "ac34487b44014b39b0fa1b3798e9a362",
-      "End": "098e6755a2a048f3bae832f5274ff638",
-      "Id": "7c306eef847847089e3f7e926ac53548"
+      "Start": "3edbdb91ae5645018899f78d5c2b568e",
+      "End": "4054c4f401914f6f969668ff7321aeb4",
+      "Id": "fd606c1e38fb4e27b5821e33019a24fd"
     }
   ],
   "Dependencies": [],
@@ -250,81 +246,81 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 32457.310654472687,
-      "EyeY": 14398.960088513964,
-      "EyeZ": 76748.700163538262,
-      "LookX": 4451.4930564648139,
-      "LookY": -4822.4508111702144,
-      "LookZ": -21515.549772913266,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
       "UpX": 0.0,
       "UpY": 1.0,
       "UpZ": 0.0
     },
     "NodeViews": [
       {
-        "ShowGeometry": false,
-        "Name": "Python Script",
-        "Id": "c05f7d6928c942e5894ff81e21e650bd",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 250.0,
-        "Y": 0.0
-      },
-      {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "d2a48abb72b14fa0961a0e957067dd4b",
+        "Id": "5e1a7ba8992e4d4083293bc030789e0c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -403.45356371490277,
-        "Y": 19.727861771058315
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "0c7cd5c44b5a4982b1d775b34269bae5",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -388.0950323974082,
-        "Y": 151.79697624190067
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "a754ce7e6f9a495b97a8bd416b309417",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 627.8336933045357,
-        "Y": -10.367170626349889
+        "X": 658.99999999999989,
+        "Y": 232.0950323974082
       },
       {
         "ShowGeometry": true,
         "Name": "Level.Elevation",
-        "Id": "c20af91819044a0d8ec3c8874261005c",
+        "Id": "c020f0c45e4048e0867c973556e01a1d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -107.0,
-        "Y": 19.0
+        "X": 955.45356371490288,
+        "Y": 231.36717062634989
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "d9df862f87d741b7963b60155ed7f128",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 674.35853131749491,
+        "Y": 364.1641468682509
+      },
+      {
+        "ShowGeometry": false,
+        "Name": "Python Script",
+        "Id": "a0f367a351364d65b5a91bfe8c7fcaaa",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1312.4535637149029,
+        "Y": 212.36717062634989
       },
       {
         "ShowGeometry": false,
         "Name": "List.GetItemAtIndex",
-        "Id": "41f1dd571af245bcb8a981ce2a853852",
+        "Id": "2d028383ad2a4ab99fcd3cc55e3df8f5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 417.26781857451397,
-        "Y": -7.997840172786141
+        "X": 1479.7213822894169,
+        "Y": 204.36933045356375
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "f8ea777d29e4449f8e530ffbedb08711",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1690.287257019439,
+        "Y": 202.0
       }
     ],
     "Annotations": [],
-    "X": 676.3575,
-    "Y": 288.47,
-    "Zoom": 1.1575
+    "X": -922.83224232163059,
+    "Y": -3.6172704291615787,
+    "Zoom": 1.4458759367551302
   }
 }

@@ -1,104 +1,20 @@
 {
-  "Uuid": "dfe93a62-3f78-4597-86dc-81d24153f2ea",
+  "Uuid": "ae01a513-b23d-4435-b188-c45ca0a1007f",
   "IsCustomNode": true,
-  "Category": "RSGBDynamo",
-  "Description": "Finds the closest point that is under the max limit input",
+  "Category": "RSGBDynamo.Point",
+  "Description": "Find the closest point",
   "Name": "ClosestPoint",
   "ElementResolver": {
     "ResolutionMap": {
-      "Point": {
+      "Autodesk.DesignScript.Geometry.Point": {
         "Key": "Autodesk.DesignScript.Geometry.Point",
         "Value": "ProtoGeometry.dll"
-      },
-      "Numbers": {
-        "Key": "Rhythm.Numbers.Numbers",
-        "Value": "RhythmCore.dll"
-      },
-      "ReferencePoint": {
-        "Key": "Revit.Elements.ReferencePoint",
-        "Value": "RevitNodes.dll"
       }
     }
   },
   "Inputs": [],
   "Outputs": [],
   "Nodes": [
-    {
-      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "# Load the Python Standard and DesignScript Libraries\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nsys.path.append(r'%AppData%\\Roaming\\Dynamo\\Dynamo Revit\\2.12\\packages\\RSBGDynamo\\extra')\r\nimport numpy as np\r\n\r\n# The inputs to this node will be stored as a list in the IN variables.\r\npointList = IN[0]\r\nmaxDistance = IN[1]\r\nallPoints = IN[2]\r\n\r\n###################################################\r\n#This script finds the closest point that is under the max limit input\r\n###################################################\r\n\r\n#Create blank lists for the outputs\r\ngroupedPoints = []\r\noutOfRangePoints = []\r\n\r\n#Loop between the 2 lists\r\nfor point in pointList:\r\n    pointDistance = []\r\n    npPoint = np.array((point.X, point.Y, point.Z))\r\n    \r\n    for secondaryPoint in allPoints:\r\n        #Using numpy calculate the euclidean distance \r\n        npSecondPoint = np.array((secondaryPoint.X, secondaryPoint.Y, secondaryPoint.Z))\r\n        \r\n        #Check are points equal\r\n        if np.array_equal(npPoint, secondaryPoint) == False:\r\n            pointDistance.append(np.linalg.norm(npPoint-npSecondPoint))\r\n            \r\n    try:\r\n        #remove any duplicate points in both lists to ensure the index matches \r\n        del allPoints[pointDistance.index(0.0)]\r\n        pointDistance.remove(0.0)\r\n    except:\r\n        print(\"can't remove 0\")\r\n        continue\r\n        \r\n    try:\r\n        #check if the min distance isn't greater than the max\r\n        minDistance = min(pointDistance)\r\n        if minDistance < maxDistance:\r\n            indexOfClosestPoint = pointDistance.index(minDistance)\r\n            groupedPoints.append([point, allPoints[indexOfClosestPoint]])\r\n        else:\r\n            outOfRangePoints.append(point)\r\n    except:\r\n        print(\"An exception occurred finding closest point\")\r\n        continue\r\n    \r\n\r\n# Assign your output to the OUT variable.\r\nOUT = [groupedPoints, outOfRangePoints]",
-      "Engine": "CPython3",
-      "VariableInputPorts": true,
-      "Id": "1d3308e0c5bf4047ae8b6e345f9ee10c",
-      "Inputs": [
-        {
-          "Id": "4581d700cd684a5bb0481b6fc9efad62",
-          "Name": "IN[0]",
-          "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "b619d97794a64cc7b94e742e56989d7c",
-          "Name": "IN[1]",
-          "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "9a4b74956ddf4a8faef0f2ecdc7fe743",
-          "Name": "IN[2]",
-          "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "5eed64ad732a43ea82a1a84223898da6",
-          "Name": "OUT",
-          "Description": "Result of the python script",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Runs an embedded Python script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "allPoints",
-        "TypeName": "Autodesk.DesignScript.Geometry.Point",
-        "TypeRank": -1,
-        "DefaultValue": null,
-        "Description": ""
-      },
-      "Id": "5611ef868d7548b9be781c2d7dd5cd8e",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "f07139cca4e24d8eba65a7f406936945",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
@@ -109,11 +25,11 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "f4a01b6bfd96433d8266ee23211357bb",
+      "Id": "d8f82e1838c94aaabc613e8c926c4fa6",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "aad646c87383415ba513099a3cdbd416",
+          "Id": "0b9b6f797e0b45b68b65780189b5c2e0",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -135,11 +51,11 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "982c767c30da45fc803cdab3a8bce7e9",
+      "Id": "d8123cb669014754872f99626b2d3ec6",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "217923729e014a3bb053161d50d3c75d",
+          "Id": "8e5ea74ac8914d14a709f321682c5007",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -152,34 +68,89 @@
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "groupedPoints: Point[]..[]",
-      "Id": "e94a5691efd044d783a0fdf8c07d631f",
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Load the Python Standard and DesignScript Libraries\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nsys.path.append(r'%AppData%\\Roaming\\Dynamo\\Dynamo Revit\\2.12\\packages\\RSBGDynamo\\extra')\r\nimport numpy as np\r\n\r\n# The inputs to this node will be stored as a list in the IN variables.\r\npointList = IN[0]\r\nmaxDistance = IN[1]\r\nallPoints = IN[2]\r\n\r\n###################################################\r\n#This script finds the closest point that is under the max limit input\r\n###################################################\r\n\r\n#Create blank lists for the outputs\r\ngroupedPoints = []\r\noutOfRangePoints = []\r\n\r\n#Loop between the 2 lists\r\nfor point in pointList:\r\n    pointDistance = []\r\n    npPoint = np.array((point.X, point.Y, point.Z))\r\n    \r\n    for secondaryPoint in allPoints:\r\n        #Using numpy calculate the euclidean distance \r\n        npSecondPoint = np.array((secondaryPoint.X, secondaryPoint.Y, secondaryPoint.Z))\r\n        \r\n        #Check are points equal\r\n        if np.array_equal(npPoint, secondaryPoint) == False:\r\n            pointDistance.append(np.linalg.norm(npPoint-npSecondPoint))\r\n            \r\n    try:\r\n        #remove any duplicate points in both lists to ensure the index matches \r\n        del allPoints[pointDistance.index(0.0)]\r\n        pointDistance.remove(0.0)\r\n    except:\r\n        print(\"can't remove 0\")\r\n        continue\r\n        \r\n    try:\r\n        #check if the min distance isn't greater than the max\r\n        minDistance = min(pointDistance)\r\n        if minDistance < maxDistance:\r\n            indexOfClosestPoint = pointDistance.index(minDistance)\r\n            groupedPoints.append([point, allPoints[indexOfClosestPoint]])\r\n        else:\r\n            outOfRangePoints.append(point)\r\n    except:\r\n        print(\"An exception occurred finding closest point\")\r\n        continue\r\n    \r\n\r\n# Assign your output to the OUT variable.\r\nOUT = [groupedPoints, outOfRangePoints]",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "4ca819ed991341909b5b59a318ae633a",
       "Inputs": [
         {
-          "Id": "0a5b681f4d9c4c2f937cdc3621520c3d",
-          "Name": "",
-          "Description": "",
+          "Id": "e6ae3769d22c4e74afeb67fa41231819",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "91d38cb3ee88462c85f02e1bb944f4a1",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3d98b31a39cb42f2af1ababb968d9219",
+          "Name": "IN[2]",
+          "Description": "Input #2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         }
       ],
-      "Outputs": [],
+      "Outputs": [
+        {
+          "Id": "bc5a50d6c250437caa8c7967c2d0432f",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "allPoints",
+        "TypeName": "Autodesk.DesignScript.Geometry.Point",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "dd278e8db8114a048e483420457f3a61",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "848f1566e9994038971377f36ee09539",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
       "Code": "output[0];\noutput[1];",
-      "Id": "1cc8e72b3dd04ebb955002d8c9486230",
+      "Id": "7fb82069eb324cfdbb0b268a008821d5",
       "Inputs": [
         {
-          "Id": "37d0c07f718a4959bef12eef4d731f31",
+          "Id": "0d35f433a5954273b828ee91baf9d6c8",
           "Name": "output",
           "Description": "output",
           "UsingDefaultValue": false,
@@ -190,7 +161,7 @@
       ],
       "Outputs": [
         {
-          "Id": "edf29506d4cb4d469262afd8ad04b5a1",
+          "Id": "7997d1ea04d240b6b036e32d685d461c",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -199,7 +170,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "34f21398932c462597cd338e6aa110fa",
+          "Id": "4c25ea0ed41343ce9ca85c39fc170245",
           "Name": "",
           "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
@@ -215,11 +186,32 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "outOfRangePoints: Point[]..[]",
-      "Id": "67629bced6004afca69af5203feeb6f5",
+      "Symbol": "groupedPoints: Point[]..[]",
+      "Id": "9f9e679c063148889dbc39f40e8933c4",
       "Inputs": [
         {
-          "Id": "96e78055797240ac93f643528588bf31",
+          "Id": "596ef15d19e843e2b47836246f543e09",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "outOfRangePoints: Point[]..[]",
+      "Id": "52a8ee9cdf53458f9d70039b161eb19c",
+      "Inputs": [
+        {
+          "Id": "2132a884778346298cd22dab4a021fc4",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -235,34 +227,34 @@
   ],
   "Connectors": [
     {
-      "Start": "5eed64ad732a43ea82a1a84223898da6",
-      "End": "37d0c07f718a4959bef12eef4d731f31",
-      "Id": "bafa1db14ba84b8ba5d78bcc8026e83c"
+      "Start": "0b9b6f797e0b45b68b65780189b5c2e0",
+      "End": "e6ae3769d22c4e74afeb67fa41231819",
+      "Id": "6ae76fcb6b124e448bfd9d908001e139"
     },
     {
-      "Start": "f07139cca4e24d8eba65a7f406936945",
-      "End": "9a4b74956ddf4a8faef0f2ecdc7fe743",
-      "Id": "5d496c28b1c943a3bdf687c8cc2d5b3a"
+      "Start": "8e5ea74ac8914d14a709f321682c5007",
+      "End": "91d38cb3ee88462c85f02e1bb944f4a1",
+      "Id": "ebfd40869b9546868f9c119eed6663a3"
     },
     {
-      "Start": "aad646c87383415ba513099a3cdbd416",
-      "End": "4581d700cd684a5bb0481b6fc9efad62",
-      "Id": "cce5c735eef246709c1e092518b8c2b3"
+      "Start": "bc5a50d6c250437caa8c7967c2d0432f",
+      "End": "0d35f433a5954273b828ee91baf9d6c8",
+      "Id": "5aa57f4bd69845a581f05e5a3a8accfd"
     },
     {
-      "Start": "217923729e014a3bb053161d50d3c75d",
-      "End": "b619d97794a64cc7b94e742e56989d7c",
-      "Id": "e829826be09b4dd88a6918d525d6c268"
+      "Start": "848f1566e9994038971377f36ee09539",
+      "End": "3d98b31a39cb42f2af1ababb968d9219",
+      "Id": "49a656c447ac4c9caf86622b74b9d5ab"
     },
     {
-      "Start": "edf29506d4cb4d469262afd8ad04b5a1",
-      "End": "0a5b681f4d9c4c2f937cdc3621520c3d",
-      "Id": "9c5ef2f8290541d5b723f9ebcc2ca3ad"
+      "Start": "7997d1ea04d240b6b036e32d685d461c",
+      "End": "596ef15d19e843e2b47836246f543e09",
+      "Id": "9d6fabaa92514254a66bb3a61dbb42df"
     },
     {
-      "Start": "34f21398932c462597cd338e6aa110fa",
-      "End": "96e78055797240ac93f643528588bf31",
-      "Id": "cc2fda1e4876474ea95b357369943521"
+      "Start": "4c25ea0ed41343ce9ca85c39fc170245",
+      "End": "2132a884778346298cd22dab4a021fc4",
+      "Id": "7ca3b56be8df4b86a24f8292e0095081"
     }
   ],
   "Dependencies": [],
@@ -280,91 +272,91 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -101177.1484375,
-      "EyeY": 62260.109375,
-      "EyeZ": 110405.40625,
-      "LookX": 13867.3671875,
-      "LookY": -63776.953125,
-      "LookZ": -59173.65234375,
-      "UpX": 0.12759122252464294,
-      "UpY": 0.8290371298789978,
-      "UpZ": -0.54444277286529541
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "d8f82e1838c94aaabc613e8c926c4fa6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 291.74142429658104,
+        "Y": 259.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "d8123cb669014754872f99626b2d3ec6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 317.560376892244,
+        "Y": 349.75001387873243
+      },
+      {
         "ShowGeometry": false,
         "Name": "Python Script",
-        "Id": "1d3308e0c5bf4047ae8b6e345f9ee10c",
+        "Id": "4ca819ed991341909b5b59a318ae633a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 591.0,
-        "Y": 0.0
+        "X": 647.965641671394,
+        "Y": 314.59484625070911
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "5611ef868d7548b9be781c2d7dd5cd8e",
+        "Id": "dd278e8db8114a048e483420457f3a61",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 232.03435832860589,
-        "Y": 120.70689942318609
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "f4a01b6bfd96433d8266ee23211357bb",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 234.77578262518693,
-        "Y": -55.594846250709111
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "982c767c30da45fc803cdab3a8bce7e9",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 260.59473522084977,
-        "Y": 35.155167628023321
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "e94a5691efd044d783a0fdf8c07d631f",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 987.53868976521881,
-        "Y": -21.0
+        "X": 289.0,
+        "Y": 435.30174567389508
       },
       {
         "ShowGeometry": true,
         "Name": "Code Block",
-        "Id": "1cc8e72b3dd04ebb955002d8c9486230",
+        "Id": "7fb82069eb324cfdbb0b268a008821d5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 740.0,
-        "Y": 9.0
+        "X": 796.965641671394,
+        "Y": 323.59484625070911
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "67629bced6004afca69af5203feeb6f5",
+        "Id": "9f9e679c063148889dbc39f40e8933c4",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 975.5,
-        "Y": 49.0
+        "X": 1044.504331436613,
+        "Y": 293.59484625070911
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "52a8ee9cdf53458f9d70039b161eb19c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1035.465641671394,
+        "Y": 371.59484625070911
       }
     ],
     "Annotations": [],
-    "X": 284.560180359375,
-    "Y": 256.9945057208086,
-    "Zoom": 0.82269535937499993
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
   }
 }
