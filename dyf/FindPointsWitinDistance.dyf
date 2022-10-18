@@ -1,0 +1,226 @@
+{
+  "Uuid": "1aad49d2-5c17-4939-bd91-17ba9b46c0ec",
+  "IsCustomNode": true,
+  "Category": "RSGBDynamo.Point",
+  "Description": "Find points within a certain distance of another ",
+  "Name": "FindPointsWitinDistance",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Numbers": {
+        "Key": "Rhythm.Numbers.Numbers",
+        "Value": "RhythmCore.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Load the Python Standard and DesignScript Libraries\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n#sys.path.append(r'%AppData%\\Dynamo\\Dynamo Revit\\2.12\\packages\\RSBGDynamo\\extra')\r\nimport numpy as np\r\nfrom scipy.spatial import distance\r\n\r\n# The inputs to this node will be stored as a list in the IN variables.\r\npointList = IN[0]\r\nmaxDistance = IN[1]\r\n\r\n###################################################\r\n#This script finds points that don't have another point \r\n#with the same coordinates\r\n###################################################\r\n\r\n#Create blank lists for the outputs\r\nunconectedPoints = []\r\n\r\ni=0\r\nnppointList = []\r\n    \r\n#Loop between the 2 lists\r\nfor point in pointList:\r\n    pointDistance = []\r\n    otherPoints = np.delete(pointList, i)\r\n    \r\n    for otherPoint in otherPoints:\r\n        dist = distance.euclidean([point.X, point.Y, point.Z], [otherPoint.X, otherPoint.Y, otherPoint.Z])\r\n        if dist == 0.0:\r\n            print(i)\r\n        pointDistance.append(dist)\r\n        if dist < maxDistance:\r\n            unconectedPoints.append(point)\r\n    \r\n    #if 0.0 not in pointDistance:\r\n        #unconectedPoints.append(point)\r\n    \r\n    i = i+1\r\n    \r\n\r\n# Assign your output to the OUT variable.\r\nOUT = unconectedPoints",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "6f980b3504a8437385030f98bd87add0",
+      "Inputs": [
+        {
+          "Id": "44a1a6d64d3e46988a0fbdc246b1d510",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5d8097abfd674a80a602756b68f6fa74",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "778818d5ebac4b279495991a6a69ff6d",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "points",
+        "TypeName": "Autodesk.DesignScript.Geometry.Point",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "e4bae0c3660a4e48ac23f73945f4bd8e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a320d8fa3ac247ee87ae2d92232ddab1",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "maxDistance",
+        "TypeName": "Rhythm.Numbers.Numbers",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "1782dd1edfcf4b9296621681f8cb4fc9",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e5b8de978e6c4dc7a43f6d50bdb1b2b0",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "points: Point[]..[]",
+      "Id": "1c712f59b2f34f9097a08dbfb5844e5c",
+      "Inputs": [
+        {
+          "Id": "01677e54866c40cfad6d48ee9d426587",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "778818d5ebac4b279495991a6a69ff6d",
+      "End": "01677e54866c40cfad6d48ee9d426587",
+      "Id": "f3a6574651164c5db93e313d5cb10d06"
+    },
+    {
+      "Start": "a320d8fa3ac247ee87ae2d92232ddab1",
+      "End": "44a1a6d64d3e46988a0fbdc246b1d510",
+      "Id": "c8fcdf91543b4671926e2fcf200f6075"
+    },
+    {
+      "Start": "e5b8de978e6c4dc7a43f6d50bdb1b2b0",
+      "End": "5d8097abfd674a80a602756b68f6fa74",
+      "Id": "e66576f2da584927ae98a227263adb41"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.0.5650",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -101177.1484375,
+      "EyeY": 62260.109375,
+      "EyeZ": 110405.40625,
+      "LookX": 13867.3671875,
+      "LookY": -63776.953125,
+      "LookZ": -59173.65234375,
+      "UpX": 0.12759122252464294,
+      "UpY": 0.8290371298789978,
+      "UpZ": -0.54444277286529541
+    },
+    "NodeViews": [
+      {
+        "Id": "6f980b3504a8437385030f98bd87add0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 747.0,
+        "Y": 162.0
+      },
+      {
+        "Id": "e4bae0c3660a4e48ac23f73945f4bd8e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 367.0,
+        "Y": 147.0
+      },
+      {
+        "Id": "1782dd1edfcf4b9296621681f8cb4fc9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 359.0,
+        "Y": 241.0
+      },
+      {
+        "Id": "1c712f59b2f34f9097a08dbfb5844e5c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 956.0,
+        "Y": 164.0
+      }
+    ],
+    "Annotations": [],
+    "X": 167.0,
+    "Y": 71.0,
+    "Zoom": 1.0
+  }
+}
